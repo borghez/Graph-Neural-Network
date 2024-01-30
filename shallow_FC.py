@@ -37,6 +37,7 @@ thresh = 0.7
 dataset = []
 
 for patient in range(0, tot_corr.shape[0]):
+
     print(f'----------------------------------', patient)
 
     means = []
@@ -60,6 +61,7 @@ for patient in range(0, tot_corr.shape[0]):
     weights = new_links_filtered.value
     edges = new_links_filtered.drop(labels="value", axis="columns")
 
+
     #nodes = np.zeros(shape=(len(pd.unique(links_filtered.var1)), 1))
     #nodes = np.array([])
 
@@ -68,6 +70,7 @@ for patient in range(0, tot_corr.shape[0]):
         node_mean = np.nanmean(new_links_filtered[new_links_filtered.var1 == node]['value'])
         node_std = np.nanstd(new_links_filtered[new_links_filtered.var1 == node]['value'])
         node_degree = len(new_links_filtered[new_links_filtered.var1 == node]['value'])
+
 
         means = np.append(means, node_mean)
         stds = np.append(stds, node_std)
@@ -88,6 +91,7 @@ for patient in range(0, tot_corr.shape[0]):
 
 data = dataset[3]
 
+
 class SmplConv(torch.nn.Module):
     def __init__(self):
         torch.manual_seed(1234567)
@@ -102,6 +106,7 @@ class SmplConv(torch.nn.Module):
         #print(x)
         x = x.relu()
         #print(x)
+
         #x = global_mean_pool(x)
         return x
 
