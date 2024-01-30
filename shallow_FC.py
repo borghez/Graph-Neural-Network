@@ -36,7 +36,8 @@ thresh = 0.7
 
 dataset = []
 
-for patient in range(0, tot_corr.shape[0]-880):
+for patient in range(0, tot_corr.shape[0]):
+
     print(f'----------------------------------', patient)
 
     means = []
@@ -49,19 +50,27 @@ for patient in range(0, tot_corr.shape[0]-880):
     matrix_df = pd.DataFrame(single_corr_thresh)
     links = matrix_df.stack().reset_index()
     links.columns = ['var1', 'var2', 'value']
-    #links_filtered = links.loc[links['value'] != 0]
-    links_filtered = links
-    weights = links_filtered.value
-    edges = links_filtered.drop(labels="value", axis="columns")
+    links_filtered = links.loc[links['value'] != 0]
+    #map to have edges index in [0, #edge_attr] and not in [1,196]
+    new_links_filtered = links_filtered.copy()
+    unique_values = np.unique(links_filtered.var1)
+    edge_map = {value: i for i, value in enumerate(unique_values)}
+    new_links_filtered.var1 = [edge_map[value] for value in links_filtered.var1]
+    new_links_filtered.var2 = [edge_map[value] for value in links_filtered.var2]
+
+    weights = new_links_filtered.value
+    edges = new_links_filtered.drop(labels="value", axis="columns")
+
 
     #nodes = np.zeros(shape=(len(pd.unique(links_filtered.var1)), 1))
     #nodes = np.array([])
 
-    for node in np.unique(links_filtered.var1):
+    for node in np.unique(new_links_filtered.var1):
 
-        node_mean = np.nanmean(links_filtered[links_filtered.var1 == node]['value'])
-        node_std = np.nanstd(links_filtered[links_filtered.var1 == node]['value'])
-        node_degree = len(links_filtered[links_filtered.var1 == node]['value'])
+        node_mean = np.nanmean(new_links_filtered[new_links_filtered.var1 == node]['value'])
+        node_std = np.nanstd(new_links_filtered[new_links_filtered.var1 == node]['value'])
+        node_degree = len(new_links_filtered[new_links_filtered.var1 == node]['value'])
+
 
         means = np.append(means, node_mean)
         stds = np.append(stds, node_std)
@@ -80,7 +89,8 @@ for patient in range(0, tot_corr.shape[0]-880):
 
 #%%
 
-data = dataset[0]
+data = dataset[3]
+
 
 class SmplConv(torch.nn.Module):
     def __init__(self):
@@ -93,9 +103,10 @@ class SmplConv(torch.nn.Module):
         x = self.conv1(x, edge_index, edge_weight)
         print(x)
         x = self.conv1(x, edge_index, edge_weight)
-        print(x)
+        #print(x)
         x = x.relu()
-        print(x)
+        #print(x)
+
         #x = global_mean_pool(x)
         return x
 
