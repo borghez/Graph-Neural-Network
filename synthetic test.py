@@ -25,10 +25,12 @@ import os
 '''Constructing a list of undirected graphs with low/high degree'''
 
 #number of nodes
+
 n = 30                      #30
 
 # number of graph samples
 n_sample = 100              #100
+
 
 # list of graphs and labels
 list_G = []
@@ -43,6 +45,7 @@ for i in range(n_sample):
     else:
         l = 1
         p = 0.3             #0.3
+
     G = nx.fast_gnp_random_graph(n, p, directed=False)
     list_G.append(G)
     adj = nx.to_numpy_matrix(G)
@@ -93,6 +96,7 @@ print('shuf acc:{} ({})'.format(np.mean(acc_shuf), np.std(acc_shuf)))
 
 
 #%%
+
 '''GCNConv'''
 
 dataset = []
@@ -128,7 +132,7 @@ plt.yticks([])
 nx.draw_networkx(G, pos=nx.spring_layout(G, seed=42), with_labels=False, cmap="Set2")
 plt.show()
 
-G1 = to_networkx(dataset[1], to_undirected=True)
+G1 = to_networkx(dataset[51], to_undirected=True)
 plt.figure(figsize=(7, 7))
 plt.xticks([])
 plt.yticks([])
@@ -136,6 +140,7 @@ nx.draw_networkx(G1, pos=nx.spring_layout(G, seed=42), with_labels=False, cmap="
 plt.show()
 
 #%%
+
 
 num_feat = 1#dataset[0].x.shape[1]
 #num_classes = len(np.unique(new_labels_sub))
@@ -218,11 +223,11 @@ for epoch in range(max_epochs):
         correct_train = 0
         for data in train_loader:
             step += 1
-            optimizer.zero_grad()                                           # Clear gradients
-            outputs = model(x=data.x, edge_index=data.edge_index, batch=data.batch)                # Forward pass
-            loss = loss_function(outputs, torch.tensor(data.y, dtype=torch.long))   # Compute loss
-            loss.backward()                                                 # Backward pass
-            optimizer.step()                                                # Update weights
+            optimizer.zero_grad()                                           
+            outputs = model(x=data.x, edge_index=data.edge_index, batch=data.batch)                
+            loss = loss_function(outputs, torch.tensor(data.y, dtype=torch.long))   
+            loss.backward()                                                 
+            optimizer.step()                                                
 
             epoch_loss += loss.item()
             preds = outputs.argmax(dim=1)
@@ -296,6 +301,3 @@ print(f'Accuracy test: {correct_test / len(test_loader.dataset)}')
 #    train_acc = test(train_loader)
 #    test_acc = test(test_loader)
 #    print(f'Epoch: {epoch:03d}, Train Acc: {train_acc:.4f}, Test Acc: {test_acc:.4f}')
-
-
-
